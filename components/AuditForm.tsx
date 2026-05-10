@@ -103,45 +103,50 @@ export default function AuditForm() {
   // SAVE LEAD
   const handleSaveLead = async () => {
 
-    if (!email) {
-      alert("Please enter your email");
-      return;
-    }
+  if (!email) {
+    alert("Please enter your email");
+    return;
+  }
 
-    const { error } = await supabase
-      .from("leads")
-      .insert([
-        {
-          email,
-          company,
-          role,
+  const { data, error } = await supabase
+    .from("leads")
+    .insert([
+      {
+        email,
+        company,
+        role,
 
-          tool,
-          plan,
-          monthly_spend: monthlySpend,
-          team_size: teamSize,
-          use_case: useCase,
+        tool,
+        plan,
+        monthly_spend: monthlySpend,
+        team_size: teamSize,
+        use_case: useCase,
 
-          recommendation: result.recommendation,
-          savings: result.savings,
-        },
-      ]);
+        recommendation: result.recommendation,
+        savings: result.savings,
+      },
+    ])
+    .select();
 
-    if (error) {
+  if (error) {
 
-      console.log(error);
-      
-      alert(error.message);
+    console.log(error);
 
-    } else {
+    alert(error.message);
 
-      alert("Audit saved successfully!");
+  } else {
 
-      setEmail("");
-      setCompany("");
-      setRole("");
-    }
-  };
+    const publicId = data[0].public_id;
+
+    alert(
+      `Audit saved successfully!\n\nShare URL:\n/audit/${publicId}`
+    );
+
+    setEmail("");
+    setCompany("");
+    setRole("");
+  }
+};
 
   return (
     <section className="px-6 pb-24">
