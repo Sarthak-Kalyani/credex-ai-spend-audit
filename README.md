@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Credex AI Spend Audit
 
-## Getting Started
+AI-powered SaaS platform that helps teams analyze and optimize their AI subscription spending.
 
-First, run the development server:
+Live Demo:
+https://credex-ai-spend-audit-ov9s.vercel.app/
+
+---
+
+## Features
+
+- AI spend audit engine
+- AI-generated optimization summaries
+- Savings recommendations
+- Shareable public audit reports
+- Lead capture system
+- Supabase database integration
+- Automated testing
+- GitHub Actions CI pipeline
+- Responsive modern UI
+- Open Graph metadata support
+
+---
+
+## Tech Stack
+
+### Frontend
+- Next.js 16
+- React
+- TypeScript
+- Tailwind CSS
+
+### Backend
+- Next.js API Routes
+- Supabase
+
+### Database
+- PostgreSQL (Supabase)
+
+### Deployment
+- Vercel
+
+### Testing
+- Vitest
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/Sarthak-Kalyani/credex-ai-spend-audit.git
+
+cd credex-ai-spend-audit
+
+npm install
+```
+
+---
+
+## Environment Variables
+
+Create `.env.local`
+
+```env
+OPENAI_API_KEY=your_key
+
+NEXT_PUBLIC_SUPABASE_URL=your_url
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```
+
+---
+
+## Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```txt
+app/
+components/
+lib/
+tests/
+.github/workflows/
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Core Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Audit Engine
+Analyzes AI tool usage and generates optimization recommendations.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Lead Capture
+Stores audit leads and report metadata inside Supabase.
+
+### Shareable URLs
+Public audit reports can be shared through dynamic URLs.
+
+### AI Summaries
+OpenAI-powered summaries with graceful fallback handling.
+
+---
+
+## CI/CD
+
+GitHub Actions automatically runs tests on every push.
+
+---
+
+## Deployment
+
+Hosted on Vercel.
+
+---
+
+## Author
+
+Sarthak Kalyani
