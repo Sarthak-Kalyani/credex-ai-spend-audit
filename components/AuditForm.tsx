@@ -58,105 +58,100 @@ export default function AuditForm() {
   }, [tool, plan, monthlySpend, teamSize, useCase]);
 
   // GENERATE AUDIT
-  const handleSaveLead = async () => {
+  const handleAudit = async () => {
 
-  if (!email) {
-    alert("Please enter your email");
-    return;
-  }
+    setLoading(true);
 
-  const { data, error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        email,
-        company,
-        role,
-
-        tool,
-        plan,
-        monthly_spend: monthlySpend,
-        team_size: teamSize,
-        use_case: useCase,
-
-        recommendation: result.recommendation,
-        savings: result.savings,
-      },
-    ])
-    .select();
-
-  if (error) {
-
-    console.log(error);
-
-    alert(error.message);
-
-  } else {
-
-    const publicId = data[0].public_id;
-
-    const shareUrl =
-      `https://credex-ai-spend-audit-ov9s.vercel.app/audit/${publicId}`;
-
-    navigator.clipboard.writeText(shareUrl);
-
-    alert(
-      `Audit saved successfully!\n\nShare URL copied to clipboard:\n\n${shareUrl}`
+    const audit = generateAudit(
+      tool,
+      Number(teamSize)
     );
 
-    setEmail("");
-    setCompany("");
-    setRole("");
-  }
-};
+    setResult(audit);
+
+    try {
+
+      const response = await fetch("/api/summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tool,
+          teamSize,
+          savings: audit.savings,
+          recommendation: audit.recommendation,
+        }),
+      });
+
+      const data = await response.json();
+
+      setSummary(data.summary);
+
+    } catch (error) {
+
+      setSummary(
+        "Your AI stack shows potential optimization opportunities that may reduce unnecessary operational costs."
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
 
   // SAVE LEAD
   const handleSaveLead = async () => {
 
-  if (!email) {
-    alert("Please enter your email");
-    return;
-  }
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        email,
-        company,
-        role,
+    const { data, error } = await supabase
+      .from("leads")
+      .insert([
+        {
+          email,
+          company,
+          role,
 
-        tool,
-        plan,
-        monthly_spend: monthlySpend,
-        team_size: teamSize,
-        use_case: useCase,
+          tool,
+          plan,
+          monthly_spend: monthlySpend,
+          team_size: teamSize,
+          use_case: useCase,
 
-        recommendation: result.recommendation,
-        savings: result.savings,
-      },
-    ])
-    .select();
+          recommendation: result.recommendation,
+          savings: result.savings,
+        },
+      ])
+      .select();
 
-  if (error) {
+    if (error) {
 
-    console.log(error);
+      console.log(error);
 
-    alert(error.message);
+      alert(error.message);
 
-  } else {
+    } else {
 
-    const publicId = data[0].public_id;
+      const publicId = data[0].public_id;
 
-    alert(
-      `Audit saved successfully!\n\nShare URL:\n/audit/${publicId}`
-    );
+      const shareUrl =
+        `https://credex-ai-spend-audit-ov9s.vercel.app/audit/${publicId}`;
 
-    setEmail("");
-    setCompany("");
-    setRole("");
-  }
-};
+      navigator.clipboard.writeText(shareUrl);
+
+      alert(
+        `Audit saved successfully!\n\nShare URL copied to clipboard:\n\n${shareUrl}`
+      );
+
+      setEmail("");
+      setCompany("");
+      setRole("");
+    }
+  };
 
   return (
     <section className="px-6 pb-24">
