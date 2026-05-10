@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { generateAudit } from "@/lib/audit-engine";
+import { supabase } from "@/lib/supabase";
 
 export default function AuditForm() {
+
   const [tool, setTool] = useState("");
   const [plan, setPlan] = useState("");
   const [monthlySpend, setMonthlySpend] = useState("");
   const [teamSize, setTeamSize] = useState("");
   const [useCase, setUseCase] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
 
   const [result, setResult] = useState<any>(null);
 
@@ -17,9 +23,11 @@ export default function AuditForm() {
 
   // LOAD SAVED DATA
   useEffect(() => {
+
     const savedData = localStorage.getItem("audit-form");
 
     if (savedData) {
+
       const parsedData = JSON.parse(savedData);
 
       setTool(parsedData.tool || "");
@@ -28,10 +36,12 @@ export default function AuditForm() {
       setTeamSize(parsedData.teamSize || "");
       setUseCase(parsedData.useCase || "");
     }
+
   }, []);
 
   // SAVE FORM DATA
   useEffect(() => {
+
     const formData = {
       tool,
       plan,
@@ -44,6 +54,7 @@ export default function AuditForm() {
       "audit-form",
       JSON.stringify(formData)
     );
+
   }, [tool, plan, monthlySpend, teamSize, useCase]);
 
   // GENERATE AUDIT
@@ -89,11 +100,56 @@ export default function AuditForm() {
     }
   };
 
+  // SAVE LEAD
+  const handleSaveLead = async () => {
+
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("leads")
+      .insert([
+        {
+          email,
+          company,
+          role,
+
+          tool,
+          plan,
+          monthly_spend: monthlySpend,
+          team_size: teamSize,
+          use_case: useCase,
+
+          recommendation: result.recommendation,
+          savings: result.savings,
+        },
+      ]);
+
+    if (error) {
+
+      console.log(error);
+      
+      alert(error.message);
+
+    } else {
+
+      alert("Audit saved successfully!");
+
+      setEmail("");
+      setCompany("");
+      setRole("");
+    }
+  };
+
   return (
     <section className="px-6 pb-24">
+
       <div className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
 
         <div className="mb-10">
+
           <p className="mb-3 text-sm uppercase tracking-[0.3em] text-green-400">
             Audit Engine
           </p>
@@ -101,11 +157,14 @@ export default function AuditForm() {
           <h2 className="text-4xl font-bold md:text-5xl">
             Run Your AI Spend Audit
           </h2>
+
         </div>
 
         <div className="grid gap-6">
 
+          {/* TOOL */}
           <div>
+
             <label className="mb-2 block text-sm text-gray-400">
               AI Tool
             </label>
@@ -122,9 +181,12 @@ export default function AuditForm() {
               <option>GitHub Copilot</option>
               <option>Gemini</option>
             </select>
+
           </div>
 
+          {/* PLAN */}
           <div>
+
             <label className="mb-2 block text-sm text-gray-400">
               Current Plan
             </label>
@@ -136,9 +198,12 @@ export default function AuditForm() {
               placeholder="Example: ChatGPT Team"
               className="w-full rounded-2xl border border-white/10 bg-black p-4 text-white outline-none transition focus:border-green-400"
             />
+
           </div>
 
+          {/* MONTHLY SPEND */}
           <div>
+
             <label className="mb-2 block text-sm text-gray-400">
               Monthly Spend ($)
             </label>
@@ -150,9 +215,12 @@ export default function AuditForm() {
               placeholder="200"
               className="w-full rounded-2xl border border-white/10 bg-black p-4 text-white outline-none transition focus:border-green-400"
             />
+
           </div>
 
+          {/* TEAM SIZE */}
           <div>
+
             <label className="mb-2 block text-sm text-gray-400">
               Team Size
             </label>
@@ -164,9 +232,12 @@ export default function AuditForm() {
               placeholder="5"
               className="w-full rounded-2xl border border-white/10 bg-black p-4 text-white outline-none transition focus:border-green-400"
             />
+
           </div>
 
+          {/* USE CASE */}
           <div>
+
             <label className="mb-2 block text-sm text-gray-400">
               Primary Use Case
             </label>
@@ -183,8 +254,10 @@ export default function AuditForm() {
               <option>Data Analysis</option>
               <option>Mixed</option>
             </select>
+
           </div>
 
+          {/* BUTTON */}
           <button
             onClick={handleAudit}
             className="mt-4 rounded-2xl bg-green-500 px-8 py-4 text-lg font-bold text-black transition hover:scale-105 hover:bg-green-400"
@@ -192,6 +265,7 @@ export default function AuditForm() {
             {loading ? "Generating..." : "Generate Audit"}
           </button>
 
+          {/* RESULTS */}
           {result && (
             <div className="mt-8 rounded-3xl border border-green-500/20 bg-gradient-to-br from-green-500/10 to-black p-8">
 
@@ -210,6 +284,7 @@ export default function AuditForm() {
               <div className="grid gap-4 md:grid-cols-2">
 
                 <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+
                   <p className="mb-2 text-sm text-gray-400">
                     Recommendation
                   </p>
@@ -217,9 +292,11 @@ export default function AuditForm() {
                   <h4 className="text-xl font-bold text-green-400">
                     {result.recommendation}
                   </h4>
+
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+
                   <p className="mb-2 text-sm text-gray-400">
                     Estimated Monthly Savings
                   </p>
@@ -227,9 +304,11 @@ export default function AuditForm() {
                   <h4 className="text-3xl font-bold text-green-400">
                     ${result.savings}
                   </h4>
+
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+
                   <p className="mb-2 text-sm text-gray-400">
                     Annual Savings
                   </p>
@@ -237,9 +316,11 @@ export default function AuditForm() {
                   <h4 className="text-3xl font-bold text-green-400">
                     ${result.savings * 12}
                   </h4>
+
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+
                   <p className="mb-2 text-sm text-gray-400">
                     Optimization Insight
                   </p>
@@ -247,6 +328,7 @@ export default function AuditForm() {
                   <p className="text-gray-300">
                     {result.reason}
                   </p>
+
                 </div>
 
               </div>
@@ -264,11 +346,57 @@ export default function AuditForm() {
 
               </div>
 
+              {/* LEAD CAPTURE */}
+              <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-6">
+
+                <h4 className="mb-6 text-2xl font-bold">
+                  Save Full Audit Report
+                </h4>
+
+                <div className="grid gap-4">
+
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="rounded-2xl border border-white/10 bg-black p-4 text-white outline-none focus:border-green-400"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Company Name (Optional)"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="rounded-2xl border border-white/10 bg-black p-4 text-white outline-none focus:border-green-400"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Role (Optional)"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="rounded-2xl border border-white/10 bg-black p-4 text-white outline-none focus:border-green-400"
+                  />
+
+                  <button
+                    onClick={handleSaveLead}
+                    className="rounded-2xl bg-white px-6 py-4 font-bold text-black transition hover:scale-105"
+                  >
+                    Save Audit Report
+                  </button>
+
+                </div>
+
+              </div>
+
             </div>
           )}
 
         </div>
+
       </div>
+
     </section>
   );
 }
